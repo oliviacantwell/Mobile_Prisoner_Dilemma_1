@@ -1,5 +1,6 @@
 package com.oliviamendenhall.prisdil
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -9,15 +10,17 @@ import android.widget.Toast
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-
-    var g = Game()
+    //var g = Game()
     var playerScore = 0
     var oppScore = 0
     var round = 1
+    var rounds = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        rounds = intent.getIntExtra("EXTRA_PICKED", 2)
 
         var stealButton = findViewById<Button>(R.id.stealButton)
         stealButton.setOnClickListener { playerSteal() }
@@ -29,8 +32,17 @@ class MainActivity : AppCompatActivity() {
 
     //increases the round displayed when called by the button choice functions
     fun roundCount(round: Int) {
-        var roundText = findViewById<TextView>(R.id.roundCount)
-        roundText.text = "Round $round"
+        if (round <= rounds) {//if round count is less than player choice then yes, otherwise intent next activity
+            var roundText = findViewById<TextView>(R.id.roundCount)
+            roundText.text = "Round $round"
+        }
+        else
+            Intent(this, ResultsPD::class.java).also {
+                it.putExtra("EXTRA_OPPSCORE", oppScore)
+                it.putExtra("EXTRA_PLAYERSCORE", playerScore)
+                startActivity(it)
+            }
+            //Toast.makeText(this, "STOP", Toast.LENGTH_LONG).show()
     }
 
     //randomly generates what the opponent's choice was
